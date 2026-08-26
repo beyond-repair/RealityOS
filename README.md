@@ -1,36 +1,72 @@
 # RealityOS
 
-**Autonomous Decision Infrastructure for Organizations**
+**Autonomous Decision Infrastructure**
 
-RealityOS continuously builds and maintains a living, confidence-scored simulation of an entire organization. It sits above existing systems of record (CRM, ERP, accounting, support, inventory, contracts, market data, etc.) and becomes the predictive and decision-support operating layer.
+RealityOS builds and maintains a living, confidence-scored simulation of an organization. It sits above existing systems of record and answers “What happens if…?” questions before decisions are made.
 
-Executives and systems ask questions of the form:
+This repository contains the actual product codebase (MVP foundation).
 
-> What happens if we raise prices 7%?  
-> What happens if supplier #4 fails?  
-> What happens if we hire 50 people in this region?  
-> Which customers are most likely to churn in the next 90 days?  
-> Which contracts are about to become unprofitable?
+## Current Status (MVP v0.1)
 
-RealityOS returns calibrated predictions, key drivers, confidence intervals, and recommended actions — then continuously learns from actual outcomes.
+- Core domain models (Organization, DataSource, Simulation, Scenario, Prediction)
+- Lightweight simulation engine with confidence scoring
+- Progressive data source connectors (stubs ready for real integrations)
+- Scenario query API
+- FastAPI backend with automatic OpenAPI docs
+- SQLite persistence for local development
+- Agent scaffolding for future autonomous operation
 
-## Core Design Principles
+## Quick Start
 
-- **Minimal human labor**: >90% of ongoing operations performed by AI agents after initial onboarding.
-- **Non-proportional scaling**: Designed to go from 1 → 1,000,000 customers without linear headcount growth.
-- **Data network effects**: Cross-customer process, decision, and failure patterns compound into a proprietary global model.
-- **Infrastructure positioning**: Not another dashboard or chatbot. Decision infrastructure analogous to how AWS is compute infrastructure and Stripe is payments infrastructure.
-- **Progressive value**: Lightweight connectors first; deeper integration and higher accuracy over time.
-- **Auditability by design**: Full provenance and confidence scoring on every prediction.
+```bash
+# Clone
+git clone https://github.com/beyond-repair/RealityOS.git
+cd RealityOS
 
-## Status
+# Backend
+cd backend
+python -m venv .venv
+source .venv/bin/activate   # or .venv\Scripts\activate on Windows
+pip install -r requirements.txt
 
-This repository contains the founding specification and the complete competition-grade prompt used to bootstrap autonomous construction and operation.
+# Run
+uvicorn app.main:app --reload
+```
 
-## Key Documents
+Open http://localhost:8000/docs for interactive API documentation.
 
-- [`POLSIA_PROMPT.md`](./POLSIA_PROMPT.md) — Full prompt for autonomous company construction and operation
-- Additional architecture, roadmap, and agent documents will be generated and maintained by the autonomous system.
+## Architecture Overview
+
+```
+backend/
+├── app/
+│   ├── main.py                 # FastAPI entrypoint
+│   ├── models/                 # Domain models (Pydantic + SQLAlchemy)
+│   ├── services/
+│   │   ├── simulation.py       # Living simulation engine
+│   │   ├── connectors/         # Progressive data source connectors
+│   │   └── scenario.py         # Scenario evaluation & prediction
+│   ├── api/                    # Route handlers
+│   └── agents/                 # Autonomous agent stubs
+├── requirements.txt
+└── tests/
+```
+
+## Design Principles (Enforced in Code)
+
+1. Progressive value – start with minimal connectors, deepen automatically
+2. Confidence-first – every prediction carries calibrated uncertainty
+3. Auditability – full provenance on every recommendation
+4. Autonomy-ready – services designed to be driven by agents with minimal human input
+5. Network-effect oriented – models structured to accumulate cross-organization patterns
+
+## Next Milestones
+
+- [ ] Real OAuth connectors (Salesforce, HubSpot, QuickBooks, Slack)
+- [ ] Outcome feedback loop (actual vs predicted)
+- [ ] Multi-tenant isolation + basic auth
+- [ ] Frontend dashboard for executives
+- [ ] First autonomous agent (Simulation Quality Agent)
 
 ## License
 
