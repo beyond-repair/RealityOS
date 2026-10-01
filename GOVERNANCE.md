@@ -1,9 +1,10 @@
-# RealityOS — Governance Lock (Sweep-119)
+# RealityOS — Governance Lock (Sweep-187)
 
 **Classification:** RESEARCH  
-**Head (pre-lock):** `a70f5924b65a4f4977ac41e45b0d4cdae414d54a`  
+**Head (pre-sweep-187):** `c06f94f6d96b01fe3cd69224ece7447f7944a28b`  
 **Governing source:** `beyond-repair/ADL-Governance`  
-**Lock date:** 2026-09-08
+**Prior lock:** Sweep-119 (2026-09-08)  
+**This lock:** 2026-10-01
 
 ## Claim contract
 
@@ -11,30 +12,21 @@ This repository is an **MVP scaffold** for an organizational simulation API. It 
 
 | Claim | State |
 |-------|--------|
-| FastAPI entrypoint + domain Pydantic/SQLAlchemy models | VERIFIED (tree) |
+| FastAPI entrypoint + domain Pydantic models | VERIFIED (tree) |
 | Simulation / scenario service modules present | VERIFIED (tree) |
+| SimulationEngine create, fidelity cap, price heuristic | VERIFIED (local pytest, Sweep-187; 4 passed) |
 | Simulation Quality Agent | STUB only (`backend/app/agents/simulation_quality.py`) |
-| Unit / integration tests | ABSENT (README lists `backend/tests/`; tree has no tests) |
-| Product CI (pytest / lint) | ABSENT (only Dependabot graph workflow) |
-| GitHub Releases / tags | none |
-| Real OAuth connectors (Salesforce, HubSpot, QuickBooks, Slack) | PLANNED (README) |
+| Unit tests | PRESENT (`backend/tests/test_simulation_engine.py`) |
+| Product CI | ADDED (`.github/workflows/research-guard.yml`); remote conclusion not yet recorded in this file |
+| GitHub Releases / tags | none (not created this sweep) |
+| Real OAuth connectors | ABSENT (`connectors/` not in tree) |
 | Calibrated confidence scoring vs empirical outcomes | UNVERIFIED |
 | Multi-tenant isolation / auth | PLANNED |
 | Living simulation of a real organization | UNVERIFIED |
 
-## Features
-
-| Feature | State |
-|---------|--------|
-| FastAPI OpenAPI surface | VERIFIED (code present; runtime not executed this cycle) |
-| SQLite local persistence | PARTIAL (models present; not integration-tested this cycle) |
-| Demo script `backend/demo.py` | VERIFIED (file present; not executed this cycle) |
-| Data source connectors | ABSENT in tree (README architecture lists `connectors/`; no such directory) |
-| Frontend dashboard | PLANNED |
-
 ## Code-review readiness
 
-**FAIL** for ACTIVE promotion: no product tests, no product CI, README/tree drift, no releases.
+**FAIL** for ACTIVE promotion: CI remote result not yet a release gate, no auth, no connectors, heuristic confidence only.
 
 ## Do not claim
 
