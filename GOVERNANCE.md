@@ -34,3 +34,11 @@ This repository is an **MVP scaffold** for an organizational simulation API. It 
 - Predictions are empirically calibrated.
 - Agent autonomy is implemented beyond stubs.
 - Connectors exist because the README diagram names them.
+
+## Repair note (2026-10-02)
+
+The Sweep-187 lock above still describes the tree as it was. A later repair corrected three facts without promoting the lifecycle:
+
+- Persistence is in-memory. SQLAlchemy and Alembic were requirements only and were removed.
+- Confidence strings no longer say the scores are calibrated.
+- Local pytest covers the engine, the scenario service, the quality-agent stub, the HTTP routes, and `demo.py`. That is not a remote CI result and not a claim-level promotion.
