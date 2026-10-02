@@ -1,7 +1,7 @@
 # RealityOS claim status
 
 **Classification:** RESEARCH (not promoted)  
-**Claim cap:** ≤ 1 (local MVP heuristic)  
+**Claim cap:** ≤ 1 (local MVP heuristic) / **RUNNABLE SKETCH**  
 **Governing source:** beyond-repair/ADL-Governance
 
 | Claim | State |

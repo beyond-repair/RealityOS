@@ -25,7 +25,7 @@ def main():
     org = engine.create_organization(name="Acme Industrial", industry="Manufacturing")
     print(f"Created organization: {org.name} ({org.id})")
 
-    # 2. Connect progressive data sources
+    # 2. Register in-memory data-source records (not live OAuth connectors)
     crm = DataSource(
         organization_id=org.id,
         type=DataSourceType.CRM,
@@ -33,7 +33,7 @@ def main():
         health_score=0.88,
     )
     engine.add_data_source(org.id, crm)
-    print("Connected CRM data source")
+    print("Registered CRM data-source record (in-memory)")
 
     accounting = DataSource(
         organization_id=org.id,
@@ -42,7 +42,7 @@ def main():
         health_score=0.91,
     )
     engine.add_data_source(org.id, accounting)
-    print("Connected Accounting data source")
+    print("Registered Accounting data-source record (in-memory)")
 
     sim = engine.get_simulation(org.id)
     print(f"\nSimulation fidelity: {sim.fidelity_score:.2f}")
