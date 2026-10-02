@@ -6,12 +6,16 @@ Run from the backend/ directory after installing requirements:
     python demo.py
 """
 
+import random
+
 from app.services.simulation import SimulationEngine
 from app.services.scenario import ScenarioService
 from app.models.domain import DataSource, DataSourceType
 
 
 def main():
+    # Fixed seed so the supplier-risk branch is reproducible. Numbers are heuristics.
+    random.seed(0)
     engine = SimulationEngine()
     scenarios = ScenarioService(engine)
 
@@ -77,6 +81,7 @@ def main():
     print(f"Outcomes: {pred3.outcomes}")
     print(f"Recommended actions: {pred3.recommended_actions}")
 
+    print("\nModel: mvp-heuristic-0.1 (in-memory heuristic, not calibrated, not an OS)")
     print("\nDemo complete. Start the API with:")
     print("  uvicorn app.main:app --reload")
     print("Then open http://localhost:8000/docs")

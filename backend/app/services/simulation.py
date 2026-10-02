@@ -10,7 +10,7 @@ the same external interface (confidence scores, provenance, progressive fidelity
 from __future__ import annotations
 
 import random
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from app.models.domain import (
@@ -73,9 +73,10 @@ class SimulationEngine:
         # Progressive fidelity increase
         sim = self._simulations[org_id]
         base_boost = 0.12 if source.health_score > 0.7 else 0.06
-        sim.fidelity_score = min(0.95, sim.fidelity_score + base_boost)
+        # Two-decimal scores avoid binary float drift (0.05 + 0.12 -> 0.17, not 0.1699...).
+        sim.fidelity_score = round(min(0.95, sim.fidelity_score + base_boost), 2)
         sim.status = SimulationStatus.LIVE if sim.fidelity_score > 0.25 else SimulationStatus.INITIALIZING
-        sim.updated_at = datetime.utcnow()
+        sim.updated_at = datetime.now(timezone.utc)
 
         # Naive entity count growth for demonstration
         if source.type.value == "crm":
@@ -104,7 +105,7 @@ class SimulationEngine:
             drift = random.uniform(-0.03, 0.04)
             sim.key_metrics[key] = round(current * (1 + drift), 2)
 
-        sim.updated_at = datetime.utcnow()
+        sim.updated_at = datetime.now(timezone.utc)
         return sim
 
     def estimate_scenario_impact(

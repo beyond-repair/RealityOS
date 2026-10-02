@@ -8,7 +8,7 @@
 
 # RealityOS
 
-### MVP decision-infrastructure simulation. Stubs are not live adapters.
+### In-memory what-if API. Heuristic confidence. Not an operating system.
 
 [![Lifecycle](https://img.shields.io/badge/●_RESEARCH-a855f7?style=for-the-badge&labelColor=0f0f23)](https://github.com/beyond-repair/ADL-Governance)
 [![Claim](https://img.shields.io/badge/Claim_%E2%89%A41-22c55e?style=for-the-badge&labelColor=0f0f23)](https://github.com/beyond-repair/ADL-Governance/blob/main/docs/CLAIM_VALIDATION.md)
@@ -17,101 +17,120 @@
 ```
 LIFECYCLE   RESEARCH
 CLAIM       ≤ 1   local MVP heuristic
-NOT CLAIMED production OS autonomy
+NOT CLAIMED production OS, living twin, calibrated forecasts
 ```
 
 </div>
 
 ---
-## ▌ STATUS
 
-Classification follows [ADL-Governance](https://github.com/beyond-repair/ADL-Governance). Sweep-187 reconfirmed RESEARCH. A README facelift does not raise claim level. CI green is not experimental validation.
+## What this repository is
 
-Sweep-187 corrections against the preserved body below:
+RealityOS is a small local API that keeps an **in-memory** sketch of one organization and answers keyword what-if questions (price, hiring, supplier, or a generic fallback). Every prediction is tagged `model_version=mvp-heuristic-0.1`.
 
-- `backend/app/services/connectors/` is **not** in the tree. Connector bullets and the architecture diagram are planned, not implemented.
-- Confidence scores are heuristic (`model_version=mvp-heuristic-0.1`), not empirically calibrated.
-- Tests now exist at `backend/tests/test_simulation_engine.py` (4 local cases). They do not prove a living twin.
-- SQLite models are present; persistence was not integration-tested this sweep.
-- Sibling map, not a successor: `os-family-constitution-map`. No SUPERSEDES label applied.
+It does **not** talk to Salesforce, QuickBooks, or any other system of record. There is no database, no login, and no autonomous company. Restarting the process drops all organizations. `POLSIA_PROMPT.md` is a design prompt, not a running product.
 
----
+Sibling map, not a successor: `os-family-constitution-map`. No SUPERSEDES label.
 
-## ▌ PRESERVED BODY
+## Configure
 
-# RealityOS
+No environment variables and no database URL. Configuration is the process defaults in code:
 
-**Autonomous Decision Infrastructure**
+| Knob | Value |
+| --- | --- |
+| Persistence | Process memory only |
+| Starting fidelity | `0.05`, status `initializing` |
+| Fidelity step | `+0.12` if source `health_score > 0.7`, else `+0.06`, rounded to 2 decimals, cap `0.95` |
+| Status `live` | Fidelity **greater than** `0.25` (two healthy sources: `0.29`) |
+| Price heuristic | `demand = -0.6 * (percent_change / 10)`; revenue change percent is `percent_change + 100 * demand` |
+| Model tag | `mvp-heuristic-0.1` |
 
-RealityOS builds and maintains a living, confidence-scored simulation of an organization. It sits above existing systems of record and answers “What happens if…?” questions before decisions are made.
+Python **3.11+**. Commands below were checked on Python 3.13.
 
-This repository contains the actual product codebase (MVP foundation).
-
-## Current Status (MVP v0.1)
-
-- Core domain models (Organization, DataSource, Simulation, Scenario, Prediction)
-- Lightweight simulation engine with confidence scoring
-- Progressive data source connectors (stubs ready for real integrations)
-- Scenario query API
-- FastAPI backend with automatic OpenAPI docs
-- SQLite persistence for local development
-- Agent scaffolding for future autonomous operation
-
-## Quick Start
+## Install, run, test
 
 ```bash
-# Clone
 git clone https://github.com/beyond-repair/RealityOS.git
-cd RealityOS
+cd RealityOS/backend
+python3 -m venv .venv
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
 
-# Backend
-cd backend
-python -m venv .venv
-source .venv/bin/activate   # or .venv\Scripts\activate on Windows
-pip install -r requirements.txt pytest
-
-# Run API
-uvicorn app.main:app --reload
-
-# Claim-capped tests
+# Tests (heuristic engine, scenario service, quality-agent stub, HTTP flow, demo)
 python -m pytest -q tests/test_simulation_engine.py
+
+# Same flow as a script (seed 0). Printed dollars and entity counts are not measurements.
+python demo.py
+
+# API. Interactive docs at http://127.0.0.1:8000/docs
+uvicorn app.main:app --host 127.0.0.1 --port 8000
 ```
 
-Open http://localhost:8000/docs for interactive API documentation.
+Use the API (another shell, with the server running):
 
-## Architecture Overview
+```bash
+ORG=$(curl -s -X POST http://127.0.0.1:8000/v1/organizations \
+  -H 'content-type: application/json' \
+  -d '{"name":"Acme Industrial","industry":"Manufacturing"}' | python3 -c 'import json,sys; print(json.load(sys.stdin)["id"])')
+
+curl -s -X POST "http://127.0.0.1:8000/v1/organizations/$ORG/data-sources" \
+  -H 'content-type: application/json' \
+  -d '{"type":"crm","name":"Salesforce Production","health_score":0.88}'
+
+curl -s "http://127.0.0.1:8000/v1/organizations/$ORG/simulation"
+
+curl -s -X POST "http://127.0.0.1:8000/v1/organizations/$ORG/scenarios" \
+  -H 'content-type: application/json' \
+  -d '{"question":"What happens if we raise prices 7%?","parameters":{"percent_change":7}}'
+```
+
+A 7% price question returns `revenue_change_pct` of **-35.0** and `customer_churn_delta_pct` of **16.8**. That is the elasticity sketch above, not a measured market outcome. One healthy source leaves fidelity at **0.17** and status **initializing**.
+
+## HTTP surface
+
+| Method | Path | Behavior |
+| --- | --- | --- |
+| GET | `/` | Name, version, `persistence=in-memory`, model tag |
+| GET | `/health` | `{"status":"ok"}` |
+| GET | `/docs` | OpenAPI UI |
+| POST | `/v1/organizations` | Create org and an empty simulation |
+| GET | `/v1/organizations/{id}` | 404 if missing |
+| POST | `/v1/organizations/{id}/data-sources` | Record a labeled source and raise fidelity. `connector_config` is stored and ignored |
+| GET | `/v1/organizations/{id}/data-sources` | List sources |
+| GET | `/v1/organizations/{id}/simulation` | Current sketch |
+| POST | `/v1/organizations/{id}/simulation/advance` | Multiply existing metrics by a random drift in `[-3%, +4%]` |
+| POST | `/v1/organizations/{id}/scenarios` | Keyword heuristic prediction |
+| GET | `/v1/organizations/{id}/predictions` | Predictions stored in this process |
+
+`backend/app/agents/simulation_quality.py` only recommends connecting a source when fidelity is low. It does not run on a schedule.
+
+## Layout
 
 ```
 backend/
 ├── app/
-│   ├── main.py                 # FastAPI entrypoint
-│   ├── models/                 # Domain models (Pydantic)
+│   ├── main.py            # FastAPI entry
+│   ├── models/domain.py   # Pydantic records
 │   ├── services/
-│   │   ├── simulation.py       # Living simulation engine (in-memory heuristic)
-│   │   └── scenario.py         # Scenario evaluation & prediction
-│   ├── api/                    # Route handlers
-│   └── agents/                 # Autonomous agent stubs
+│   │   ├── simulation.py  # In-memory engine
+│   │   └── scenario.py    # Stores Prediction objects
+│   ├── api/routes.py
+│   └── agents/simulation_quality.py
+├── demo.py
 ├── requirements.txt
-└── tests/                     # Sweep-187 heuristic tests
+└── tests/test_simulation_engine.py
 ```
 
-`connectors/` is not present.
+There is no `connectors/` package. Declared-but-unused SQLAlchemy, Alembic, python-jose, and passlib dependencies were removed so install matches the code.
 
-## Design Principles (Enforced in Code)
+## Not claimed
 
-1. Progressive value – start with minimal connectors, deepen automatically
-2. Confidence-first – every prediction carries explicit uncertainty (heuristic, not calibrated)
-3. Auditability – provenance dict on scenario estimates
-4. Autonomy-ready – services designed to be driven by agents with minimal human input
-5. Network-effect oriented – models structured to accumulate cross-organization patterns
-
-## Next Milestones
-
-- [ ] Real OAuth connectors (Salesforce, HubSpot, QuickBooks, Slack)
-- [ ] Outcome feedback loop (actual vs predicted)
-- [ ] Multi-tenant isolation + basic auth
-- [ ] Frontend dashboard for executives
-- [ ] First autonomous agent (Simulation Quality Agent)
+- An operating system, a living organization, or production autonomy
+- Calibrated confidence or outcome feedback
+- OAuth or any real connector
+- Multi-tenant auth
+- SQLite or any other persistence
+- A passed GitHub Actions run (the existing `research-guard` workflow is unchanged and was not treated as evidence)
 
 ## License
 

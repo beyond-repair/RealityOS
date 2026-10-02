@@ -11,9 +11,9 @@ from app import __version__
 app = FastAPI(
     title="RealityOS",
     description=(
-        "Autonomous Decision Infrastructure. "
-        "Living organizational simulations that answer ‘What happens if…?’ "
-        "with calibrated confidence and full provenance."
+        "Local in-memory MVP for organizational what-if questions. "
+        "Confidence is a heuristic (model_version mvp-heuristic-0.1), "
+        "not a calibrated forecast and not an operating system."
     ),
     version=__version__,
     docs_url="/docs",
@@ -22,8 +22,9 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Tighten in production
-    allow_credentials=True,
+    allow_origins=["*"],
+    # Wildcard origins cannot be paired with credentialed requests.
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -36,9 +37,11 @@ def root():
     return {
         "name": "RealityOS",
         "version": __version__,
-        "status": "live",
+        "status": "ok",
+        "persistence": "in-memory",
+        "model_version": "mvp-heuristic-0.1",
         "docs": "/docs",
-        "message": "Decision infrastructure is online.",
+        "message": "Heuristic what-if API is running. Not a calibrated organizational twin.",
     }
 
 

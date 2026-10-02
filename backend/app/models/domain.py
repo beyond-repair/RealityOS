@@ -9,12 +9,16 @@ Design principles encoded here:
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Optional
 from uuid import uuid4
 
 from pydantic import BaseModel, Field
+
+
+def _utc_now() -> datetime:
+    return datetime.now(timezone.utc)
 
 
 class DataSourceType(str, Enum):
@@ -39,8 +43,8 @@ class Organization(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid4()))
     name: str
     industry: Optional[str] = None
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=_utc_now)
+    updated_at: datetime = Field(default_factory=_utc_now)
 
 
 class DataSource(BaseModel):
@@ -52,7 +56,7 @@ class DataSource(BaseModel):
     last_synced_at: Optional[datetime] = None
     health_score: float = Field(default=0.0, ge=0.0, le=1.0)  # 0–1
     is_active: bool = True
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=_utc_now)
 
 
 class SimulationState(BaseModel):
@@ -64,8 +68,8 @@ class SimulationState(BaseModel):
     last_calibrated_at: Optional[datetime] = None
     entity_counts: dict[str, int] = Field(default_factory=dict)  # e.g. {"customers": 1240, "contracts": 87}
     key_metrics: dict[str, float] = Field(default_factory=dict)
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=_utc_now)
+    updated_at: datetime = Field(default_factory=_utc_now)
 
 
 class Scenario(BaseModel):
@@ -74,7 +78,7 @@ class Scenario(BaseModel):
     organization_id: str
     question: str
     parameters: dict[str, Any] = Field(default_factory=dict)
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=_utc_now)
     created_by: Optional[str] = None  # user or agent id
 
 
@@ -89,4 +93,4 @@ class Prediction(BaseModel):
     key_drivers: list[str] = Field(default_factory=list)
     recommended_actions: list[str] = Field(default_factory=list)
     provenance: dict[str, Any] = Field(default_factory=dict)  # which data sources & models contributed
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=_utc_now)
