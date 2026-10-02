@@ -16,8 +16,8 @@
 
 ```
 LIFECYCLE   RESEARCH
-CLAIM       ≤ 1   local MVP heuristic
-NOT CLAIMED production OS, living twin, calibrated forecasts
+CLAIM       ≤ 1   local MVP heuristic / RUNNABLE SKETCH
+NOT CLAIMED production OS · living twin · calibrated forecasts · live connectors · SQLite
 ```
 
 </div>
