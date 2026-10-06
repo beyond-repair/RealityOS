@@ -42,3 +42,12 @@ The Sweep-187 lock above still describes the tree as it was. A later repair corr
 - Persistence is in-memory. SQLAlchemy and Alembic were requirements only and were removed.
 - Confidence strings no longer say the scores are calibrated.
 - Local pytest covers the engine, the scenario service, the quality-agent stub, the HTTP routes, and `demo.py`. That is not a remote CI result and not a claim-level promotion.
+
+## Sweep-250 (2026-10-06)
+
+Random draw index 21 of 83. Classification remains RESEARCH. Claim cap remains ≤ 1.
+
+- Local pytest on `0f2a06f1`: 17 passed.
+- Actions run 37067369615 conclusion success on `0f2a06f1`.
+- Commit `c93d446472c6e2e69d1b85644709d73dbd1e93a4` sets workflow `permissions: contents: read` and adds `SECURITY.md`. That commit's Actions result is not recorded here until observed.
+- No tag. No archive. No ACTIVE promotion. OS-family merge remains operator-only.
