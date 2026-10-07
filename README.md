@@ -130,7 +130,7 @@ There is no `connectors/` package. Declared-but-unused SQLAlchemy, Alembic, pyth
 - OAuth or any real connector
 - Multi-tenant auth
 - SQLite or any other persistence
-- Promotion to ACTIVE. `research-guard` run [37067369615](https://github.com/beyond-repair/RealityOS/actions/runs/37067369615) succeeded on `0f2a06f1` (17 local pytest passed on that tree, Sweep-250). That is a sketch gate, not a security audit. See `SECURITY.md`.
+- Promotion to ACTIVE. `research-guard` run [37515961844](https://github.com/beyond-repair/RealityOS/actions/runs/37515961844) succeeded on main `e36664a` (Sweep-274 observation; earlier run [37067369615](https://github.com/beyond-repair/RealityOS/actions/runs/37067369615) succeeded on `0f2a06f1`). Local pytest this sweep: 18 passed. That is a sketch gate, not a security audit. See `SECURITY.md`.
 
 ## License
 

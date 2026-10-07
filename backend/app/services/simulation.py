@@ -1,10 +1,8 @@
 """
-Living Simulation Engine – the core of RealityOS.
+In-memory heuristic sketch used by the RealityOS API.
 
-MVP implementation uses deterministic + lightly stochastic models so that
-the system is fully runnable today. Real production versions will replace
-the internal models with learned cross-organization patterns while keeping
-the same external interface (confidence scores, provenance, progressive fidelity).
+Formulas are deterministic except where tests seed `random`. This module is
+not a living organization model and does not learn from outcomes.
 """
 
 from __future__ import annotations
@@ -23,13 +21,12 @@ from app.models.domain import (
 
 class SimulationEngine:
     """
-    Maintains and advances the living simulation for an organization.
+    In-memory organization sketch.
 
-    Design invariants:
-    - Fidelity starts low and rises as more high-quality data sources are connected
-      and as prediction → outcome feedback is received.
-    - Every state change records provenance.
-    - The engine never claims certainty; confidence is always explicit.
+    Invariants in this tree:
+    - Fidelity starts at 0.05 and rises only when a data source is recorded.
+    - Outcome feedback is not implemented.
+    - Confidence is a formula of fidelity, not a calibrated probability.
     """
 
     def __init__(self):
@@ -92,8 +89,8 @@ class SimulationEngine:
 
     def advance_simulation(self, org_id: str) -> SimulationState:
         """
-        Called periodically (or by an agent) to keep the simulation living.
-        In production this would ingest new events and recalibrate models.
+        Multiply existing key metrics by one uniform drift in [-3%, +4%].
+        Does not ingest events and does not recalibrate.
         """
         sim = self._simulations.get(org_id)
         if not sim:

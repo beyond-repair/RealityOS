@@ -297,3 +297,22 @@ def test_demo_script_prints_heuristic_banner(capsys):
     assert "mvp-heuristic-0.1" in out
     assert "Simulation fidelity: 0.29" in out
     assert "Demo complete" in out
+
+
+def test_health_score_at_threshold_uses_smaller_step():
+    """health_score > 0.7 is the high step. Equality stays on the 0.06 step."""
+    engine = SimulationEngine()
+    org = engine.create_organization("Acme")
+    engine.add_data_source(
+        org.id,
+        DataSource(
+            organization_id=org.id,
+            type=DataSourceType.ERP,
+            name="erp",
+            health_score=0.7,
+        ),
+    )
+    sim = engine.get_simulation(org.id)
+    assert sim.fidelity_score == 0.11
+    assert sim.status == SimulationStatus.INITIALIZING
+    assert engine.get_organization("missing") is None
